@@ -1,0 +1,11 @@
+{
+  "name": "automate-aws-resources-lambda",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Marlon Baptista de Quadros <marlonbquadros@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^3.33.0",
+    "serverless-python-requirements": "^6.0.0"
+  }
+}

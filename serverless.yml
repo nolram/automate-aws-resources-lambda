@@ -1,0 +1,97 @@
+service: automate-aws-resources-lambda
+frameworkVersion: '3'
+
+package:
+  individually: false
+  exclude:
+    - 'node_modules/**'
+    - 'venv/**'
+    - 'layers/**'
+    - '**.ipynb'
+    - '**.pdf'
+    - '**.zip'
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  timeout: 180
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ec2:DescribeInstances
+            - ec2:StartInstances
+            - ec2:StopInstances
+          Resource: '*'
+        - Effect: Allow
+          Action:
+            - rds:DescribeDBInstances
+            - rds:StopDBInstance
+            - rds:StartDBInstance
+          Resource: "*"
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    dockerImage: mlupin/docker-lambda:python3.9-build
+    slim: true
+    layer: true
+
+functions:
+  ec2TurnOff:
+    handler: handler.turn_off_ec2
+    memorySize: 128
+    events:
+      - schedule: cron(0 23 ? * MON-FRI *)  # Run at 10 PM UTC-3 from Monday to Friday
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
+    package:
+      include:
+        - src/**/*.py
+      exclude:
+        - src/**/__pycache__
+
+  ec2TurnOn:
+    handler: handler.turn_on_ec2
+    memorySize: 128
+    events:
+      - schedule: cron(0 11 ? * MON-FRI *)  # Run at 8 AM UTC-3 from Monday to Friday
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
+    package:
+      include:
+        - src/**/*.py
+      exclude:
+        - src/**/__pycache__
+
+
+  rdsTurnOff:
+    handler: handler.turn_off_rds
+    memorySize: 128
+    events:
+      - schedule: cron(0 23 ? * MON-FRI *)  # Run at 10 PM UTC-3 from Monday to Friday
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
+    package:
+      include:
+        - src/**/*.py
+      exclude:
+        - src/**/__pycache__
+
+  rdsTurnOn:
+    handler: handler.turn_on_rds
+    memorySize: 128
+    events:
+      - schedule: cron(0 11 ? * MON-FRI *)  # Run at 8 AM UTC-3 from Monday to Friday
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
+    package:
+      include:
+        - src/**/*.py
+      exclude:
+        - src/**/__pycache__
