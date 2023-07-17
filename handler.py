@@ -98,7 +98,7 @@ def turn_on_rds(event, context):
     # Turn off instances
     if instances_to_turn_off:
         for i in instances_to_turn_off:
-            rds.stop_db_instance(DBInstanceIdentifier=i)
+            rds.start_db_instance(DBInstanceIdentifier=i)
         print(f"Turned on the following RDS instances: {', '.join(instances_to_turn_off)}")
     else:
         print("No RDS instances to turn off.")
